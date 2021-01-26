@@ -8,13 +8,19 @@ namespace JelszoKezelo
 {
     public class usrData
     {
+        private int id;
         private string fnev;
-        public string FNev { get => fnev;  set => fnev = value; }
         private string jelszo;
-        public string Jelszo { get => jelszo;  set => jelszo = value; }
         private string masterpw;
-        public string MasterPw { get => masterpw;  set => masterpw = value; }
         private string sessiontoken;
+
+        public int Id { get => id; set => id = value; }
+        public string FNev { get => fnev;  set => fnev = value; }
+        
+        public string Jelszo { get => jelszo;  set => jelszo = value; }
+        
+        public string MasterPw { get => masterpw;  set => masterpw = value; }
+        
         public string SessionToken { get => sessiontoken;  set => sessiontoken = value; }
     }
 }
