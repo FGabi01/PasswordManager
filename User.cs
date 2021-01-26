@@ -44,28 +44,25 @@ namespace JelszoKezelo
             dbConnect = new MySqlConnection(connString);
         }
 
-        public static int GetUser(usrData user)
+        public static usrData GetUser(usrData user)
         {
-            usrData currUser;
-            int returnValue = -1;
             String query = $"SELECT * FROM users where fnev='{user.FNev}'";
             MySqlCommand cmd = new MySqlCommand(query, dbConnect);
 
             dbConnect.Open();
             MySqlDataReader reader = cmd.ExecuteReader();
 
+            user.Id = -1;
             if(reader.HasRows)
             {
                 reader.Read();
-                int id = (int)reader["id"];
-                string fnev = (string)reader["fnev"];
-                string jelszo = (string)reader["jelszo"];
-
-                returnValue = id;
+                user.Id = (int)reader["id"];
+                user.FNev = (string)reader["fnev"];
+                user.Jelszo = (string)reader["jelszo"];
             }
 
             dbConnect.Close();
-            return returnValue;
+            return user;
         }
 
         public static void AddUser(usrData user)
