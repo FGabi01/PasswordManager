@@ -57,7 +57,7 @@ namespace JelszoKezelo
 
             inputBox.AcceptButton = okButton;
             inputBox.CancelButton = cancelButton;
-            
+
             DialogResult result = inputBox.ShowDialog();
             input = textBox.Text;
             return result;
@@ -65,7 +65,10 @@ namespace JelszoKezelo
         public Bejelentkezes()
         {
             InitializeComponent();
+            User.InitializeDB();
         }
+
+        private User currUser;
 
         public string Masterpw()
         {
@@ -73,59 +76,13 @@ namespace JelszoKezelo
             do
             {
                 input = "Adja meg a master jelszót(min 15 karakter hosszu)";
-                if(ShowInputDialog(ref input) == DialogResult.Cancel)
+                if (ShowInputDialog(ref input) == DialogResult.Cancel)
                 {
                     return null;
                 }
             }
             while (input.Length < 15);
             return input;
-        }
-
-        public int Registration(usrData user)
-        {
-            if (!File.Exists("data.txt"))
-                File.Create("data.txt");
-            else
-            {
-                StreamReader rdr = new StreamReader("data.txt");
-                while(!rdr.EndOfStream)
-                {
-                    string[] data = rdr.ReadLine().Split(':');
-                    if(data[0] == user.FNev)
-                    {
-                        rdr.Close();
-                        return 1;
-                    }
-                }
-                rdr.Close();
-            }
-
-            user.MasterPw = Masterpw();
-            if (user.MasterPw == null) return 1;
-            StreamWriter wr = File.AppendText("data.txt");
-            wr.WriteLine($"{user.FNev}:{user.Jelszo}:{Hash(user.MasterPw)}");
-            wr.Close();
-            return 0;
-        }
-
-        public int Login(usrData user)
-        {
-            if(File.Exists("data.txt"))
-            {
-                StreamReader rdr = new StreamReader("data.txt");
-                while(!rdr.EndOfStream)
-                {
-                    string[] data = rdr.ReadLine().Split(':');
-                    if(data[0] == user.FNev && data[1] == user.Jelszo)
-                    {
-                        rdr.Close();
-                        return 0;
-                    }
-                }
-                rdr.Close();
-            }
-            return 1;
         }
 
         public string Hash(string Data)
@@ -140,17 +97,9 @@ namespace JelszoKezelo
             return hashedInputStringBuilder.ToString();
         }
 
-        public int CheckIfEmpty(TextBox tb)
-        {
-            if(tb.Text == "")
-                return 0;
-            else
-                return 1; 
-        }
-
         private void btReg_Click(object sender, EventArgs e)
         {
-            if (CheckIfEmpty(tbFelh) == 0 || CheckIfEmpty(tbJelsz) == 0)
+            if (String.IsNullOrEmpty(tbFelh.Text) || String.IsNullOrEmpty(tbJelsz.Text))
             {
                 MessageBox.Show("Kérem töltsön ki minden mezőt!");
                 return;
@@ -158,19 +107,21 @@ namespace JelszoKezelo
             usrData user = new usrData();
             user.FNev = Hash(tbFelh.Text);
             user.Jelszo = Hash(tbJelsz.Text);
-            if(Registration(user) == 0)
+            if (User.GetUser(user) == -1)
             {
+                user.MasterPw = Hash(Masterpw());
+                User.AddUser(user);
                 MessageBox.Show("Sikeres regisztracio");
             }
             else
             {
                 MessageBox.Show("Sikertelen regisztracio");
             }
-        }   
+        }
 
         private void btBej_Click(object sender, EventArgs e)
         {
-            if(CheckIfEmpty(tbFelh) == 0 || CheckIfEmpty(tbJelsz) == 0)
+            if (String.IsNullOrEmpty(tbFelh.Text) || String.IsNullOrEmpty(tbJelsz.Text))
             {
                 MessageBox.Show("Kérem töltsön ki minden mezőt!");
                 return;
@@ -179,19 +130,33 @@ namespace JelszoKezelo
             usrData user = new usrData();
             user.FNev = Hash(tbFelh.Text);
             user.Jelszo = Hash(tbJelsz.Text);
-            if(Login(user) == 0)
+            int id = User.GetUser(user);
+            if (id != -1)
             {
-                MessageBox.Show("Sikeresen bejelentkezett");
+                MessageBox.Show($"Sikeresen bejelentkezett! ID:{id}");
+
             }
             else
             {
-                MessageBox.Show("Helytelen felhasznalonev vagy jelszo!");            
+                MessageBox.Show("Helytelen felhasznalonev vagy jelszo!");
             }
         }
 
         private void Bejelentkezes_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void cbJelszoMegjelennites_CheckedChanged(object sender, EventArgs e)
+        {
+            if(cbJelszoMegjelennites.Checked)
+            {
+                tbJelsz.PasswordChar = '\0';
+            }
+            else
+            {
+                tbJelsz.PasswordChar = '*';
+            }
         }
     }
 }
