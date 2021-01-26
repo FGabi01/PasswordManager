@@ -16,6 +16,7 @@ namespace JelszoKezelo
 {
     public partial class Bejelentkezes : Form
     {
+        //Inputbox a master jelszó megadásához
         private static DialogResult ShowInputDialog(ref string input)
         {
             System.Drawing.Size size = new System.Drawing.Size(350, 80);
@@ -68,8 +69,7 @@ namespace JelszoKezelo
             User.InitializeDB();
         }
 
-        private User currUser;
-
+        //Bekéri a master jelszót
         public string Masterpw()
         {
             string input;
@@ -85,6 +85,7 @@ namespace JelszoKezelo
             return input;
         }
 
+        //SHA512 Hash létrehozása egy sztringből
         public string Hash(string Data)
         {
             var data = Encoding.UTF8.GetBytes(Data);
@@ -99,6 +100,7 @@ namespace JelszoKezelo
 
         private void btReg_Click(object sender, EventArgs e)
         {
+            //Ellenőrizzük, hogy nem-e üres bármely mező
             if (String.IsNullOrEmpty(tbFelh.Text) || String.IsNullOrEmpty(tbJelsz.Text))
             {
                 MessageBox.Show("Kérem töltsön ki minden mezőt!");
@@ -107,7 +109,7 @@ namespace JelszoKezelo
             usrData user = new usrData();
             user.FNev = Hash(tbFelh.Text);
             user.Jelszo = Hash(tbJelsz.Text);
-            if (User.GetUser(user) == -1)
+            if (User.GetUser(user).Id == -1)
             {
                 user.MasterPw = Hash(Masterpw());
                 User.AddUser(user);
@@ -121,6 +123,7 @@ namespace JelszoKezelo
 
         private void btBej_Click(object sender, EventArgs e)
         {
+            //Ellenőrizzük, hogy nem-e üres bármely mező
             if (String.IsNullOrEmpty(tbFelh.Text) || String.IsNullOrEmpty(tbJelsz.Text))
             {
                 MessageBox.Show("Kérem töltsön ki minden mezőt!");
@@ -130,10 +133,11 @@ namespace JelszoKezelo
             usrData user = new usrData();
             user.FNev = Hash(tbFelh.Text);
             user.Jelszo = Hash(tbJelsz.Text);
-            int id = User.GetUser(user);
-            if (id != -1)
+            user = User.GetUser(user);
+            if (user.Id != -1)
             {
-                MessageBox.Show($"Sikeresen bejelentkezett! ID:{id}");
+
+                MessageBox.Show($"Sikeresen bejelentkezett! ID:{user.Id}");
 
             }
             else
