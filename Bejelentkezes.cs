@@ -2,14 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Security.Cryptography;
-using System.IO;
-using Microsoft.VisualBasic;
 
 
 namespace JelszoKezelo
@@ -151,9 +148,9 @@ namespace JelszoKezelo
 
         }
 
-        private void cbJelszoMegjelennites_CheckedChanged(object sender, EventArgs e)
+        private void cbJelszoMegjelenites_CheckedChanged(object sender, EventArgs e)
         {
-            if(cbJelszoMegjelennites.Checked)
+            if(cbJelszoMegjelenites.Checked)
             {
                 tbJelsz.PasswordChar = '\0';
             }
